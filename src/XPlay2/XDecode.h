@@ -14,7 +14,7 @@ public:
 
 	//发送到解码线程，不管成功与否都释放pkt空间(对象和媒体内容)
 	virtual bool Send(AVPacket* pkt);
-	//获取解码后数据，一次send可能需要多次recv,最后获取缓冲中的Send NULL再Recv多次
+	//获取解码后数据，一次send可能需要多次recv,最后获取缓冲中的Send NULL再Recv多次，每次复制一次要由调用者释放av_frame_free
 	virtual AVFrame* Recv();
 
 	virtual void Close();
@@ -25,7 +25,7 @@ public:
 	virtual ~XDecode();
 
 protected:
-	AVCodecContext* codec;
+	AVCodecContext* codec = 0;
 	std::mutex mux;
 };
 

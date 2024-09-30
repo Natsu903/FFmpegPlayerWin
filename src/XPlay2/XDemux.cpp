@@ -87,13 +87,15 @@ bool XDemux::Open(const char* url)
 	//获取视频流
 	videoStream = av_find_best_stream(ic, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
 	AVStream* as = ic->streams[videoStream];
+	width = as->codecpar->width;
+	height = as->codecpar->height;
 	//打印视频信息
 	std::cout << "=================================================" << std::endl;
 	std::cout << "codec_id=" << as->codecpar->codec_id << std::endl;
 	std::cout << "format=" << as->codecpar->format << std::endl;
 	std::cout << videoStream << " video infomation" << std::endl;
-	std::cout << "width = " << as->codecpar->width << std::endl;
-	std::cout << "height = " << as->codecpar->height << std::endl;
+	std::cout << "width = " << width << std::endl;
+	std::cout << "height = " << height << std::endl;
 	//帧数
 	std::cout << "video_fps = " << r2d(as->avg_frame_rate) << std::endl;
 
@@ -138,6 +140,14 @@ AVPacket* XDemux::Read()
 	mux.unlock();
 	std::cout << pkt->pts << " " << std::flush;
 	return pkt;
+}
+
+bool XDemux::IsAudio(AVPacket* pkt)
+{
+	if (!pkt)return false;
+	if (pkt->stream_index == videoStream)
+		return false;
+	return true;
 }
 
 AVCodecParameters* XDemux::CopyVPara()

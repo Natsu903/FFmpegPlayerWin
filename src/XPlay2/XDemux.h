@@ -14,6 +14,8 @@ public:
 	//空间需要调用者释放，释放AVPacket和数据空间 av_packet_free
 	virtual AVPacket* Read();
 
+	virtual bool IsAudio(AVPacket* pkt);
+
 	//获取视频参数，返回的空间需要清理 avcodec_parameters_free()
 	virtual AVCodecParameters* CopyVPara();
 
@@ -33,6 +35,8 @@ public:
 
 	//媒体总时长(毫秒)
 	int totalMs = 0;
+	int width = 0;
+	int height = 0;
 
 protected:
 	std::mutex mux;

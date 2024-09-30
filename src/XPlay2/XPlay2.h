@@ -11,6 +11,6 @@ public:
     XPlay2(QWidget *parent = nullptr);
     ~XPlay2();
 
-private:
+//private:
     Ui::XPlay2Class ui;
 };

@@ -4,23 +4,28 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
 #include <mutex>
+
+struct AVFrame;
+
 class XVideoWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
 	Q_OBJECT
 
 public:
 	void Init(int width, int height);
+	//不管成功与否都要释放frame
+	virtual void Repaint(AVFrame* frame);
 	XVideoWidget(QWidget* parent);
 	~XVideoWidget();
 protected:
 	//刷新显示
-	void paintGL();
+	void paintGL() override;
 
 	//初始化gl
-	void initializeGL();
+	void initializeGL() override;
 
 	// 窗口尺寸变化
-	void resizeGL(int width, int height);
+	void resizeGL(int width, int height) override;
 private:
 	//shader程序
 	QOpenGLShaderProgram program;

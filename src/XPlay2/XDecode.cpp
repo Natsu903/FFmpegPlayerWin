@@ -32,7 +32,7 @@ bool XDecode::Open(AVCodecParameters* para)
 	codec->thread_count = 16;
 
 	///打开解码器上下文
-	int re = avcodec_open2(codec, 0, 0);
+	int re = avcodec_open2(codec, nullptr, nullptr);
 	if (re != 0)
 	{
 		avcodec_free_context(&codec);

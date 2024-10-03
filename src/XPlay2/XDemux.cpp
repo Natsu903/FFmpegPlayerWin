@@ -21,7 +21,7 @@ bool XDemux::Open(const char* url)
 {
 	Close();
 	//参数设置
-	AVDictionary* opts = NULL;
+	AVDictionary* opts = nullptr;
 	//设置rtsp流已经tcp打开
 	av_dict_set(&opts, "rtsp_transport", "tcp", 0);
 
@@ -29,7 +29,7 @@ bool XDemux::Open(const char* url)
 	av_dict_set(&opts, "max_delay", "500", 0);
 
 	mux.lock();
-	int re = avformat_open_input(&ic, url, NULL, &opts);//参数设置为rtsp的延时时间
+	int re = avformat_open_input(&ic, url, nullptr, &opts);//参数设置为rtsp的延时时间
 	if (re != 0)
 	{
 		mux.unlock();
@@ -41,7 +41,7 @@ bool XDemux::Open(const char* url)
 	std::cout << "open" << url << "success" << std::endl;
 
 	//获取流信息
-	re = avformat_find_stream_info(ic, 0);
+	re = avformat_find_stream_info(ic, nullptr);
 
 	//总时长
 	int totalMs = ic->duration / (AV_TIME_BASE / 1000);
@@ -85,7 +85,7 @@ bool XDemux::Open(const char* url)
 	*/
 
 	//获取视频流
-	videoStream = av_find_best_stream(ic, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
+	videoStream = av_find_best_stream(ic, AVMEDIA_TYPE_VIDEO, -1, -1, nullptr, 0);
 	AVStream* as = ic->streams[videoStream];
 	width = as->codecpar->width;
 	height = as->codecpar->height;
@@ -101,7 +101,7 @@ bool XDemux::Open(const char* url)
 
 
 	//获取音频流
-	audioStream = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
+	audioStream = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1, -1, nullptr, 0);
 	as = ic->streams[audioStream];
 	std::cout << "=================================================" << std::endl;
 	//打印视频信息

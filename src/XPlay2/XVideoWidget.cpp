@@ -1,6 +1,10 @@
 #include "XVideoWidget.h"
 #include <QDebug>
 #include <QTimer>
+extern "C"
+{
+#include <libavutil/frame.h>
+}
 //自动加双引号
 #define GET_STR(x) #x
 #define A_VER 3
@@ -89,6 +93,27 @@ void XVideoWidget::Init(int width, int height)
 	//创建材质显卡空间
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width / 2, height / 2, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 	mux.unlock();
+}
+
+void XVideoWidget::Repaint(AVFrame* frame)
+{
+	if (!frame) return;
+	//保证尺寸正确
+	mux.lock();
+	if (!datas[0] || width * height == 0 || frame->width != this->width || frame->height != this->height)
+	{
+		av_frame_free(&frame);
+		mux.unlock();
+		return;
+	}
+	memcpy(datas[0], frame->data[0], width * height);
+	memcpy(datas[1], frame->data[1], width * height/4);
+	memcpy(datas[2], frame->data[2], width * height/4);
+	//行对齐问题
+	mux.unlock();
+	//刷新显示
+	update();
+	return;
 }
 
 //准备yuv数据

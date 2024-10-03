@@ -19,13 +19,13 @@ public:
 
 	virtual void Close();
 	virtual void Clear();
-
-
+	
+	
 	XDecode();
 	virtual ~XDecode();
 
 protected:
-	AVCodecContext* codec = 0;
+	AVCodecContext* codec = nullptr;
 	std::mutex mux;
 };
 

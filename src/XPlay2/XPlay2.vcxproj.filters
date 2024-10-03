@@ -49,12 +49,18 @@
     <ClCompile Include="XVideoWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="XResample.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="XDemux.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="XDecode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="XResample.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

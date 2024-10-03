@@ -3,6 +3,7 @@
 #include <iostream>
 #include "XDemux.h"
 #include "XDecode.h"
+#include "XResample.h"
 #include <QThread>
 
 class TestThread :public QThread
@@ -26,7 +27,10 @@ public:
 		//vdecode.Clear();
 		//vdecode.Close();
 		std::cout << "adecode.Open() = " << adecode.Open(demux.CopyAPara()) << std::endl;
+		std::cout << "resample.Open() = " << resample.Open(demux.CopyAPara()) << std::endl;
+		
 	}
+	unsigned char* pcm = new unsigned char[1024 * 1024];
 	void run() override
 	{
 		for (;;)
@@ -34,9 +38,11 @@ public:
 			AVPacket* pkt = demux.Read();
 			if (demux.IsAudio(pkt))
 			{
-				//adecode.Send(pkt);
-				//AVFrame *frame = adecode.Recv();
-				//cout << "Audio:" << frame << endl;
+				adecode.Send(pkt);
+				AVFrame *frame = adecode.Recv();
+				std::cout << "Resample:" << resample.Resample(frame, pcm) << " ";
+				
+				//std::cout << "Audio:" << frame << std::endl;
 			}
 			else
 			{
@@ -54,6 +60,7 @@ public:
 	///解码测试
 	XDecode vdecode;
 	XDecode adecode;
+	XResample resample;
 	XVideoWidget* video;
 
 };

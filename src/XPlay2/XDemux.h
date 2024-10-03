@@ -37,11 +37,13 @@ public:
 	int totalMs = 0;
 	int width = 0;
 	int height = 0;
+	int sampleRate = 0;
+	int channels = 0;
 
 protected:
 	std::mutex mux;
 	//解封装上下文
-	AVFormatContext* ic = NULL;
+	AVFormatContext* ic = nullptr;
 
 	//音视频索引，用于区分流信息
 	int videoStream = 0;

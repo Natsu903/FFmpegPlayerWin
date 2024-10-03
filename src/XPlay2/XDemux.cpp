@@ -104,7 +104,9 @@ bool XDemux::Open(const char* url)
 	audioStream = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1, -1, nullptr, 0);
 	as = ic->streams[audioStream];
 	std::cout << "=================================================" << std::endl;
-	//打印视频信息
+	//打印音频信息
+	sampleRate = as->codecpar->sample_rate;
+	channels = as->codecpar->ch_layout.nb_channels;
 	std::cout << "codec_id=" << as->codecpar->codec_id << std::endl;
 	std::cout << "format=" << as->codecpar->format << std::endl;
 	std::cout << audioStream << " audio information" << std::endl;

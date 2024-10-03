@@ -5,6 +5,7 @@
 #include "XDecode.h"
 #include "XResample.h"
 #include <QThread>
+#include "XAudioPlay.h"
 
 class TestThread :public QThread
 {
@@ -28,7 +29,10 @@ public:
 		//vdecode.Close();
 		std::cout << "adecode.Open() = " << adecode.Open(demux.CopyAPara()) << std::endl;
 		std::cout << "resample.Open() = " << resample.Open(demux.CopyAPara()) << std::endl;
-		
+		XAudioPlay::Get()->channels = demux.channels;
+		XAudioPlay::Get()->sampleRate = demux.sampleRate;
+		std::cout << "XAudioPlay::Get()->Open() = " << XAudioPlay::Get()->Open() << std::endl;
+
 	}
 	unsigned char* pcm = new unsigned char[1024 * 1024];
 	void run() override

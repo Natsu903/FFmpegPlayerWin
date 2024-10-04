@@ -32,7 +32,6 @@ public:
 		XAudioPlay::Get()->channels = demux.channels;
 		XAudioPlay::Get()->sampleRate = demux.sampleRate;
 		std::cout << "XAudioPlay::Get()->Open() = " << XAudioPlay::Get()->Open() << std::endl;
-
 	}
 	unsigned char* pcm = new unsigned char[1024 * 1024];
 	void run() override
@@ -44,7 +43,17 @@ public:
 			{
 				adecode.Send(pkt);
 				AVFrame *frame = adecode.Recv();
-				std::cout << "Resample:" << resample.Resample(frame, pcm) << " ";
+				int len = resample.Resample(frame, pcm);
+				std::cout << "Resample:" << len << " ";
+				while (len > 0)
+				{
+					if (XAudioPlay::Get()->GetFree() >= len)
+					{
+						XAudioPlay::Get()->Write(pcm, len);
+						break;
+					}
+					msleep(1);
+				}
 				
 				//std::cout << "Audio:" << frame << std::endl;
 			}
@@ -53,7 +62,7 @@ public:
 				vdecode.Send(pkt);
 				AVFrame* frame = vdecode.Recv();
 				video->Repaint(frame);
-				msleep(40);
+				/*msleep(40);*/
 				//cout << "Video:" << frame << endl;
 			}
 			if (!pkt)break;

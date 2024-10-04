@@ -8,7 +8,7 @@ extern "C"
 
 #pragma comment(lib,"swresample.lib")
 
-bool XResample::Open(AVCodecParameters* para)
+bool XResample::Open(AVCodecParameters* para, bool isClearPara)
 {
 	if (!para)return false;
 	mux.lock();
@@ -26,7 +26,11 @@ bool XResample::Open(AVCodecParameters* para)
 		&out_ch_layout,out_sample_fmt,out_sample_rate,
 		&in_ch_layout,in_sample_fmt,out_sample_rate,
 		0, nullptr);
-	avcodec_parameters_free(&para);
+
+	if (isClearPara)
+	{
+		avcodec_parameters_free(&para);
+	}
 
 	if (re != 0)
 	{
@@ -36,17 +40,16 @@ bool XResample::Open(AVCodecParameters* para)
 		std::cout << "open" << swr_alloc_set_opts2 << "failed" << buf << std::endl;
 		return false;
 	}
+
 	re = swr_init(actx);
 	mux.unlock();
 	if (re != 0)
 	{
-		mux.unlock();
 		char buf[1024] = { 0 };
 		av_strerror(re, buf, sizeof(buf) - 1);
 		std::cout << "open" << swr_alloc_set_opts2 << "failed" << buf << std::endl;
 		return false;
 	}
-	
 	return true;
 }
 

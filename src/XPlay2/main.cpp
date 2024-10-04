@@ -6,10 +6,12 @@
 #include "XResample.h"
 #include <QThread>
 #include "XAudioPlay.h"
+#include "XAudioThread.h"
 
 class TestThread :public QThread
 {
 public:
+	XAudioThread at;
 	void Init()
 	{
 		//香港卫视
@@ -27,11 +29,13 @@ public:
 		std::cout << "vdecode.Open() = " << vdecode.Open(demux.CopyVPara()) << std::endl;
 		//vdecode.Clear();
 		//vdecode.Close();
-		std::cout << "adecode.Open() = " << adecode.Open(demux.CopyAPara()) << std::endl;
-		std::cout << "resample.Open() = " << resample.Open(demux.CopyAPara()) << std::endl;
-		XAudioPlay::Get()->channels = demux.channels;
-		XAudioPlay::Get()->sampleRate = demux.sampleRate;
-		std::cout << "XAudioPlay::Get()->Open() = " << XAudioPlay::Get()->Open() << std::endl;
+		//std::cout << "adecode.Open() = " << adecode.Open(demux.CopyAPara()) << std::endl;
+		//std::cout << "resample.Open() = " << resample.Open(demux.CopyAPara()) << std::endl;
+		//XAudioPlay::Get()->channels = demux.channels;
+		//XAudioPlay::Get()->sampleRate = demux.sampleRate;
+		//std::cout << "XAudioPlay::Get()->Open() = " << XAudioPlay::Get()->Open() << std::endl;
+		std::cout << "at.Open() = " << at.Open(demux.CopyAPara(), demux.sampleRate, demux.channels) << std::endl;
+		at.start();
 	}
 	unsigned char* pcm = new unsigned char[1024 * 1024];
 	void run() override
@@ -41,7 +45,8 @@ public:
 			AVPacket* pkt = demux.Read();
 			if (demux.IsAudio(pkt))
 			{
-				adecode.Send(pkt);
+				at.Push(pkt);
+				/*adecode.Send(pkt);
 				AVFrame *frame = adecode.Recv();
 				int len = resample.Resample(frame, pcm);
 				std::cout << "Resample:" << len << " ";
@@ -53,8 +58,7 @@ public:
 						break;
 					}
 					msleep(1);
-				}
-				
+				}*/
 				//std::cout << "Audio:" << frame << std::endl;
 			}
 			else

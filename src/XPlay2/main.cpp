@@ -8,6 +8,7 @@
 #include "XAudioPlay.h"
 #include "XAudioThread.h"
 #include "XVideoThread.h"
+#include "XDemuxThread.h"
 
 class TestThread :public QThread
 {
@@ -109,15 +110,19 @@ int main(int argc, char *argv[])
 		}
 		if (!pkt)break;
 	}*/
-	TestThread tt;
+	//TestThread tt;
 	QApplication a(argc, argv);
 	XPlay2 w;
 	w.show();
 
 	//初始化gl窗口
 	//w.ui.video->Init(tt.demux.width, tt.demux.height);
-	tt.video = w.ui.video;
-	tt.Init();
-	tt.start();
+	//tt.video = w.ui.video;
+	//tt.Init();
+	//tt.start();
+	XDemuxThread dt;
+	dt.Open("v1080.mp4", w.ui.video);
+	dt.Start();
+
 	return a.exec();
 }

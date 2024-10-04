@@ -4,15 +4,16 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
 #include <mutex>
+#include "IVideoCall.h"
 
 struct AVFrame;
 
-class XVideoWidget : public QOpenGLWidget, protected QOpenGLFunctions
+class XVideoWidget : public QOpenGLWidget, protected QOpenGLFunctions,public IVideoCall
 {
 	Q_OBJECT
 
 public:
-	void Init(int width, int height);
+	virtual void Init(int width, int height);
 	//不管成功与否都要释放frame
 	virtual void Repaint(AVFrame* frame);
 	XVideoWidget(QWidget* parent);

@@ -111,6 +111,7 @@ void XVideoWidget::Repaint(AVFrame* frame)
 	memcpy(datas[2], frame->data[2], width * height/4);
 	//行对齐问题
 	mux.unlock();
+	av_frame_free(&frame);
 	//刷新显示
 	update();
 	return;

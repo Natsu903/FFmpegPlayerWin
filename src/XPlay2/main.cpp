@@ -7,11 +7,13 @@
 #include <QThread>
 #include "XAudioPlay.h"
 #include "XAudioThread.h"
+#include "XVideoThread.h"
 
 class TestThread :public QThread
 {
 public:
 	XAudioThread at;
+	XVideoThread vt;
 	void Init()
 	{
 		//香港卫视
@@ -21,12 +23,12 @@ public:
 		demux.Clear();
 		demux.Close();
 		std::cout << "demux.Open = " << demux.Open(url);
-		std::cout << "CopyVPara = " << demux.CopyVPara() << std::endl;
-		std::cout << "CopyAPara = " << demux.CopyAPara() << std::endl;
+		//std::cout << "CopyVPara = " << demux.CopyVPara() << std::endl;
+		//std::cout << "CopyAPara = " << demux.CopyAPara() << std::endl;
 		//cout << "seek=" << demux.Seek(0.95) << endl;
 
 		/////////////////////////////
-		std::cout << "vdecode.Open() = " << vdecode.Open(demux.CopyVPara()) << std::endl;
+		//std::cout << "vdecode.Open() = " << vdecode.Open(demux.CopyVPara()) << std::endl;
 		//vdecode.Clear();
 		//vdecode.Close();
 		//std::cout << "adecode.Open() = " << adecode.Open(demux.CopyAPara()) << std::endl;
@@ -35,7 +37,9 @@ public:
 		//XAudioPlay::Get()->sampleRate = demux.sampleRate;
 		//std::cout << "XAudioPlay::Get()->Open() = " << XAudioPlay::Get()->Open() << std::endl;
 		std::cout << "at.Open() = " << at.Open(demux.CopyAPara(), demux.sampleRate, demux.channels) << std::endl;
+		vt.Open(demux.CopyVPara(), video, demux.width, demux.height);
 		at.start();
+		vt.start();
 	}
 	unsigned char* pcm = new unsigned char[1024 * 1024];
 	void run() override
@@ -63,9 +67,10 @@ public:
 			}
 			else
 			{
-				vdecode.Send(pkt);
+				vt.Push(pkt);
+				/*vdecode.Send(pkt);
 				AVFrame* frame = vdecode.Recv();
-				video->Repaint(frame);
+				video->Repaint(frame);*/
 				/*msleep(40);*/
 				//cout << "Video:" << frame << endl;
 			}
@@ -75,10 +80,10 @@ public:
 	///测试XDemux
 	XDemux demux;
 	///解码测试
-	XDecode vdecode;
-	XDecode adecode;
-	XResample resample;
-	XVideoWidget* video;
+	//XDecode vdecode;
+	//XDecode adecode;
+	//XResample resample;
+	XVideoWidget* video = nullptr;
 
 };
 
@@ -105,15 +110,14 @@ int main(int argc, char *argv[])
 		if (!pkt)break;
 	}*/
 	TestThread tt;
-	tt.Init();
-
 	QApplication a(argc, argv);
 	XPlay2 w;
 	w.show();
 
 	//初始化gl窗口
-	w.ui.video->Init(tt.demux.width, tt.demux.height);
+	//w.ui.video->Init(tt.demux.width, tt.demux.height);
 	tt.video = w.ui.video;
+	tt.Init();
 	tt.start();
 	return a.exec();
 }

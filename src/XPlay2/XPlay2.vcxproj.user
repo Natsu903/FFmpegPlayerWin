@@ -7,11 +7,11 @@
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <QtTouchProperty>
     </QtTouchProperty>
-    <QtLastBackgroundBuild>2024-10-04T10:25:32.9864346Z</QtLastBackgroundBuild>
+    <QtLastBackgroundBuild>2024-10-04T11:47:04.6651496Z</QtLastBackgroundBuild>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <QtTouchProperty>
     </QtTouchProperty>
-    <QtLastBackgroundBuild>2024-10-04T10:25:33.2245154Z</QtLastBackgroundBuild>
+    <QtLastBackgroundBuild>2024-10-04T11:47:05.0282194Z</QtLastBackgroundBuild>
   </PropertyGroup>
 </Project>

@@ -96,7 +96,7 @@ void XAudioThread::run()
         }
         mux.unlock();
     }
-    delete pcm;
+    delete []pcm;
 }
 
 XAudioThread::XAudioThread()

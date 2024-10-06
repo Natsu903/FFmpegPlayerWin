@@ -12,6 +12,10 @@ public:
 	XDecodeThread();
 	virtual ~XDecodeThread();
 	virtual void Push(AVPacket* pkt);
+
+	//清理队列
+	virtual void Clear();
+
 	//取出一帧数据并出栈，如果没有返回null
 	virtual AVPacket* Pop();
 

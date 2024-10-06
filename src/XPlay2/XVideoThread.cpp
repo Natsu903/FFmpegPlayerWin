@@ -6,6 +6,7 @@
 bool XVideoThread::Open(AVCodecParameters* para, IVideoCall* call, int width, int height)
 {
 	if (!para)return false;
+	Clear();
 	vmux.lock();
 	synpts = 0;
 	//初始化显示窗口

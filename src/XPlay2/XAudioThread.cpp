@@ -7,6 +7,7 @@
 bool XAudioThread::Open(AVCodecParameters* para, int sampleRate, int channels)
 {
     if (!para)return false;
+    Clear();
     amux.lock();
     bool re = true;
     if (!res->Open(para, false))

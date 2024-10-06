@@ -14,7 +14,7 @@ class XVideoThread:public QThread
 public:
 	virtual bool Open(AVCodecParameters* para, IVideoCall* call, int width, int height);
 	virtual void Push(AVPacket* pkt);
-	void run() override;
+	void run();
 
 	XVideoThread();
 	virtual ~XVideoThread();

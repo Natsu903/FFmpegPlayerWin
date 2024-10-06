@@ -9,7 +9,7 @@ public:
 	QAudioSink* output = nullptr;
 	QIODevice* io = nullptr;
 	std::mutex mux;
-	bool Open() override
+	bool Open()
 	{
 		Close();
 		QAudioFormat fmt;
@@ -24,7 +24,7 @@ public:
 		return false;
 	}
 
-	bool Close() override
+	bool Close()
 	{
 		mux.lock();
 		if (io)
@@ -43,7 +43,8 @@ public:
 		return true;
 	}
 
-	bool  Write(const unsigned char* data, int datasize) override
+	bool  
+		Write(const unsigned char* data, int datasize)
 	{
 		if (!data || datasize <= 0) return false;
 		mux.lock();
@@ -58,7 +59,7 @@ public:
 		return true;
 	}
 
-	int GetFree() override
+	int GetFree()
 	{
 		mux.lock();
 		if (!output)
@@ -70,7 +71,33 @@ public:
 		mux.unlock();
 		return free;
 	}
+
+	long long GetNoPlayMs()
+	{
+		mux.lock();
+		if (!output)
+		{
+			mux.unlock();
+			return 0;
+		}
+		long long pts = 0;
+		//还未播放的字节数
+		double size = output->bufferSize() - output->bytesFree();
+		//一秒音频的字节大小
+		double secSize = sampleRate * (sampleSize / 8) * channels;
+		if (secSize <= 0)
+		{
+			pts = 0;
+		}
+		else
+		{
+			pts = (size / secSize) * 1000;
+		}
+		mux.unlock();
+		return pts;
+	}
 };
+
 XAudioPlay* XAudioPlay::Get()
 {
 	static CXAudioPlay play;

@@ -78,6 +78,9 @@ void XAudioThread::run()
         {
 			AVFrame* frame = decode->Recv();
             if (!frame)break;
+            //减去缓冲中未播放的时间ms
+            pts = decode->pts - ap->GetNoPlayMs();
+            std::cout << "audio pts=" << pts << std::endl;
             //重采样
             int size = res->Resample(frame, pcm);
             //播放音频

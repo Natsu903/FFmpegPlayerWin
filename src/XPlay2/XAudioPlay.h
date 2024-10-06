@@ -1,4 +1,5 @@
 #pragma once
+
 class XAudioPlay
 {
 public:
@@ -9,6 +10,8 @@ public:
 	//打开音频播放
 	virtual bool Open() = 0;
 	virtual bool Close() = 0;
+	//返回缓冲中还没有播放的时间(ms)
+	virtual long long GetNoPlayMs() = 0;
 
 	//播放音频
 	virtual bool Write(const unsigned char* data, int datasize) = 0;

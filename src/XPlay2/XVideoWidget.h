@@ -20,13 +20,13 @@ public:
 	~XVideoWidget();
 protected:
 	//刷新显示
-	void paintGL() override;
+	void paintGL();
 
 	//初始化gl
-	void initializeGL() override;
+	void initializeGL();
 
 	// 窗口尺寸变化
-	void resizeGL(int width, int height) override;
+	void resizeGL(int width, int height);
 private:
 	//shader程序
 	QOpenGLShaderProgram program;

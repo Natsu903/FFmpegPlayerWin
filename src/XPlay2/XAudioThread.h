@@ -12,10 +12,12 @@ class XResample;
 class XAudioThread:public QThread
 {
 public:
+	//当前播放音频的pts
+	long long pts = 0;
 	//打开，不管成功与否都清理
 	virtual bool Open(AVCodecParameters* para,int sampleRate,int channels);
 	virtual void Push(AVPacket* pkt);
-	void run() override;
+	void run();
 
 	XAudioThread();
 	virtual ~XAudioThread();

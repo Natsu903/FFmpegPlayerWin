@@ -1,8 +1,6 @@
 #include "XVideoWidget.h"
 #include <QDebug>
-#include <QTimer>
-extern "C"
-{
+extern "C" {
 #include <libavutil/frame.h>
 }
 //自动加双引号
@@ -10,7 +8,7 @@ extern "C"
 #define A_VER 3
 #define T_VER 4
 
-FILE* fp = NULL;
+FILE* fp = nullptr;
 
 //顶点shader
 const char* vString = GET_STR(
@@ -48,6 +46,37 @@ void main(void)
 
 
 
+//准备yuv数据
+// ffmpeg -i v1080.mp4 -t 10 -s 240x128 -pix_fmt yuv420p  out240x128.yuv
+XVideoWidget::XVideoWidget(QWidget* parent)
+	: QOpenGLWidget(parent)
+{
+}
+
+XVideoWidget::~XVideoWidget()
+{
+}
+
+void XVideoWidget::Repaint(AVFrame* frame)
+{
+	if (!frame)return;
+	mux.lock();
+	//容错，保证尺寸正确
+	if (!datas[0] || width * height == 0 || frame->width != this->width || frame->height != this->height)
+	{
+		av_frame_free(&frame);
+		mux.unlock();
+		return;
+	}
+	memcpy(datas[0], frame->data[0], width * height);
+	memcpy(datas[1], frame->data[1], width * height / 4);
+	memcpy(datas[2], frame->data[2], width * height / 4);
+	//行对齐问题
+	mux.unlock();
+	av_frame_free(&frame);
+	//刷新显示
+	update();
+}
 void XVideoWidget::Init(int width, int height)
 {
 	mux.lock();
@@ -61,11 +90,11 @@ void XVideoWidget::Init(int width, int height)
 	datas[1] = new unsigned char[width * height / 4];	//U
 	datas[2] = new unsigned char[width * height / 4];	//V
 
+
 	if (texs[0])
 	{
 		glDeleteTextures(3, texs);
 	}
-
 	//创建材质
 	glGenTextures(3, texs);
 
@@ -92,42 +121,12 @@ void XVideoWidget::Init(int width, int height)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	//创建材质显卡空间
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width / 2, height / 2, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+
+
 	mux.unlock();
-}
 
-void XVideoWidget::Repaint(AVFrame* frame)
-{
-	if (!frame) return;
-	//保证尺寸正确
-	mux.lock();
-	if (!datas[0] || width * height == 0 || frame->width != this->width || frame->height != this->height)
-	{
-		av_frame_free(&frame);
-		mux.unlock();
-		return;
-	}
-	memcpy(datas[0], frame->data[0], width * height);
-	memcpy(datas[1], frame->data[1], width * height/4);
-	memcpy(datas[2], frame->data[2], width * height/4);
-	//行对齐问题
-	mux.unlock();
-	av_frame_free(&frame);
-	//刷新显示
-	update();
-	return;
-}
 
-//准备yuv数据
-// ffmpeg -i v1080.mp4 -t 10 -s 240x128 -pix_fmt yuv420p  out240x128.yuv
-XVideoWidget::XVideoWidget(QWidget* parent)
-	: QOpenGLWidget(parent)
-{
 }
-
-XVideoWidget::~XVideoWidget()
-{
-}
-
 //初始化opengl
 void XVideoWidget::initializeGL()
 {
@@ -183,12 +182,26 @@ void XVideoWidget::initializeGL()
 	unis[0] = program.uniformLocation("tex_y");
 	unis[1] = program.uniformLocation("tex_u");
 	unis[2] = program.uniformLocation("tex_v");
+
 	mux.unlock();
+
+	//fp = fopen("out240x128.yuv", "rb");
+	//if (!fp)
+	//{
+	//	qDebug() << "out240x128.yuv file open failed!";
+	//}
 }
 
 //刷新显示
 void XVideoWidget::paintGL()
 {
+	//if (feof(fp))
+	//{
+	//	fseek(fp, 0, SEEK_SET);
+	//}
+	//fread(datas[0], 1, width*height, fp);
+	//fread(datas[1], 1, width*height / 4, fp);
+	//fread(datas[2], 1, width*height / 4, fp);
 	mux.lock();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texs[0]); //0层绑定到Y材质
@@ -197,12 +210,14 @@ void XVideoWidget::paintGL()
 	//与shader uni遍历关联
 	glUniform1i(unis[0], 0);
 
+
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, texs[1]); //1层绑定到U材质
 	//修改材质内容(复制内存内容)
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width / 2, height / 2, GL_RED, GL_UNSIGNED_BYTE, datas[1]);
 	//与shader uni遍历关联
 	glUniform1i(unis[1], 1);
+
 
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_2D, texs[2]); //2层绑定到V材质

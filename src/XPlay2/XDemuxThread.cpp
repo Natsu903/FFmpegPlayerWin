@@ -31,6 +31,7 @@ bool XDemuxThread::Open(const char* url, IVideoCall* call)
 		re = false;
 		std::cout << "at->Open error" << std::endl;
 	}
+	totalMs = demux->totalMs;
 	mux.unlock();
 	std::cout << "XDemuxThread::Open :" << re << std::endl;
 	return re;
@@ -49,6 +50,20 @@ void XDemuxThread::Start()
 	mux.unlock();
 }
 
+void XDemuxThread::Close()
+{
+	isExit = true;
+	wait();
+	if (vt) vt->Close();
+	if (at) at->Close();
+	mux.lock();
+	delete vt;
+	delete at;
+	vt = nullptr;
+	at = nullptr;
+	mux.unlock();
+}
+
 void XDemuxThread::run()
 {
 	while (!isExit)
@@ -63,6 +78,7 @@ void XDemuxThread::run()
 		//ÒôÊÓÆµÍ¬²½
 		if (vt && at)
 		{
+			pts = at->pts;
 			vt->synpts = at->pts;
 		}
 		AVPacket* pkt = demux->Read();

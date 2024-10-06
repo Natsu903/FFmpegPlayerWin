@@ -14,11 +14,15 @@ public:
 	virtual bool Open(const char* url, IVideoCall* call);
 	//启动所有线程
 	virtual void Start();
+	//关闭线程，清理资源
+	virtual void Close();
 
-	void run();
+	void run() override;
 	XDemuxThread();
 	virtual ~XDemuxThread();
 	bool isExit = false;
+	long long pts = 0;
+	long long totalMs = 0;
 protected:
 	std::mutex mux;
 	XDemux* demux = nullptr;

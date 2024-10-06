@@ -75,7 +75,9 @@ int XResample::Resample(AVFrame* indata, unsigned char* d)
 	data[0] = d;
 	int re = swr_convert(actx, data, indata->nb_samples, 
 		(const uint8_t**)indata->data, indata->nb_samples);
-	int outSize=re*indata->ch_layout.nb_channels*2;
+	int outSize = re * indata->ch_layout.nb_channels * 2;
+	av_frame_free(&indata);
+	if (re <= 0)return re;
 	return outSize;
 }
 

@@ -28,6 +28,7 @@ bool XVideoThread::Open(AVCodecParameters* para, IVideoCall* call, int width, in
 
 
 
+
 void XVideoThread::run()
 {
 	while (!isExit)

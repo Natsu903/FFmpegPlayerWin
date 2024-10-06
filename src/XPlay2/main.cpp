@@ -31,7 +31,7 @@ public:
 		vt.start();
 	}
 	unsigned char* pcm = new unsigned char[1024 * 1024];
-	void run()
+	void run() override
 	{
 		for (;;)
 		{
@@ -60,9 +60,11 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 	XPlay2 w;
 	w.show();
-	XDemuxThread dt;
-	dt.Open("v1080.mp4", w.ui.video);
-	dt.Start();
+	//XDemuxThread dt;
+	////const char* testurl = "http://zhibo.hkstv.tv/livestream/mutfysrq/playlist.m3u8";
+	//const char* testurl = "v1080p";
+	//dt.Open(testurl, w.ui.video);
+	//dt.Start();
 
 	return a.exec();
 }

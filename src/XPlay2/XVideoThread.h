@@ -1,5 +1,5 @@
 #pragma once
-#include <QThread>
+#include "XDecodeThread.h"
 #include <mutex>
 #include <list>
 #include "IVideoCall.h"
@@ -9,24 +9,18 @@ struct AVCodecParameters;
 class XDecode;
 
 //解码和显示视频部分
-class XVideoThread:public QThread
+class XVideoThread:public XDecodeThread
 {
 public:
 	virtual bool Open(AVCodecParameters* para, IVideoCall* call, int width, int height);
-	virtual void Push(AVPacket* pkt);
-	void run();
-
+	void run() override;
 	XVideoThread();
 	virtual ~XVideoThread();
-
-	//最大队列
-	int maxList = 100;
-	bool isExit = false;
+	//同步时间由外部传入 
+	long long synpts = 0;
 
 protected:
-	std::list<AVPacket*>packets;
-	std::mutex mux;
-	XDecode* decode = nullptr;
+	std::mutex vmux;
 	IVideoCall* call = nullptr;
 };
 

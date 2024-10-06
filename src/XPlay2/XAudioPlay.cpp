@@ -9,7 +9,7 @@ public:
 	QAudioSink* output = nullptr;
 	QIODevice* io = nullptr;
 	std::mutex mux;
-	bool Open()
+	bool Open() override
 	{
 		Close();
 		QAudioFormat fmt;
@@ -24,7 +24,7 @@ public:
 		return false;
 	}
 
-	bool Close()
+	bool Close() override
 	{
 		mux.lock();
 		if (io)
@@ -44,7 +44,7 @@ public:
 	}
 
 	bool  
-		Write(const unsigned char* data, int datasize)
+		Write(const unsigned char* data, int datasize) override
 	{
 		if (!data || datasize <= 0) return false;
 		mux.lock();
@@ -59,7 +59,7 @@ public:
 		return true;
 	}
 
-	int GetFree()
+	int GetFree() override
 	{
 		mux.lock();
 		if (!output)
@@ -72,7 +72,7 @@ public:
 		return free;
 	}
 
-	long long GetNoPlayMs()
+	long long GetNoPlayMs() override
 	{
 		mux.lock();
 		if (!output)

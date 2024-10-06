@@ -11,6 +11,9 @@ public:
     XPlay2(QWidget *parent = nullptr);
     ~XPlay2();
 
-//private:
+public slots:
+    void OpenFile();
+
+private:
     Ui::XPlay2Class ui;
 };

@@ -96,7 +96,36 @@ public:
 		mux.unlock();
 		return pts;
 	}
+
+	void SetPause(bool isPause) override
+	{
+		mux.lock();
+		if (!output)
+		{
+			mux.unlock();
+			return;
+		}
+		if (isPause)
+		{
+			output->suspend();
+		}
+		else
+		{
+			output->resume();
+		}
+		mux.unlock();
+	}
+	void Clear() override
+	{
+		mux.lock();
+		if (io)
+		{
+			io->reset();
+		}
+		mux.unlock();
+	}
 };
+
 
 XAudioPlay* XAudioPlay::Get()
 {

@@ -16,6 +16,9 @@ public:
 	virtual void Start();
 	//关闭线程，清理资源
 	virtual void Close();
+	virtual void Clear();
+
+	virtual void Seek(double pos);
 
 	void run() override;
 	XDemuxThread();
@@ -23,6 +26,8 @@ public:
 	bool isExit = false;
 	long long pts = 0;
 	long long totalMs = 0;
+	void SetPause(bool isPause);
+	bool isPause = false;
 protected:
 	std::mutex mux;
 	XDemux* demux = nullptr;

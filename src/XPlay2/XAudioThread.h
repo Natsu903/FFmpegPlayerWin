@@ -16,11 +16,15 @@ public:
 	//打开，不管成功与否都清理
 	virtual bool Open(AVCodecParameters* para,int sampleRate,int channels);
 	//停止线程，清理资源
-	virtual void Close();
+	void Close() override;
+	void Clear() override;
 	void run() override;
 
 	XAudioThread();
 	virtual ~XAudioThread();
+
+	void SetPause(bool isPause);
+	bool isPause = false;
 
 protected:
 	XAudioPlay* ap = nullptr;

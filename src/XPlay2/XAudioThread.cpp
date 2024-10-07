@@ -53,12 +53,26 @@ void XAudioThread::Close()
     }
 }
 
+void XAudioThread::Clear()
+{
+    XDecodeThread::Clear();
+    mux.lock();
+    if (ap) ap->Clear();
+    mux.unlock();
+}
+
 void XAudioThread::run()
 {
     unsigned char* pcm = new unsigned char[1024 * 1024 * 10];
     while (!isExit)
     {
         amux.lock();
+        if (isPause)
+        {
+            amux.unlock();
+            msleep(5);
+            continue;
+        }
         AVPacket* pkt = Pop();
         bool re = decode->Send(pkt);
         if (!re)
@@ -82,7 +96,7 @@ void XAudioThread::run()
             {
                 if(size<=0)break;
                 //缓冲未播完，空间不够
-                if (ap->GetFree() < size)
+                if (ap->GetFree() < size || isPause)
                 {
                     msleep(1);
                     continue;
@@ -107,4 +121,11 @@ XAudioThread::~XAudioThread()
     //等待线程退出
     isExit = true;
     wait();
+}
+
+void XAudioThread::SetPause(bool isPause)
+{
+    this->isPause = isPause;
+    if (ap)
+        ap->SetPause(isPause);
 }

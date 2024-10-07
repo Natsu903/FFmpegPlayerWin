@@ -1,7 +1,32 @@
 #include "XVideoThread.h"
 #include <iostream>
 #include "XDecode.h"
-#include <iostream>
+
+bool XVideoThread::RepaintPts(AVPacket* pkt, long long seekpts)
+{
+	vmux.lock();
+	bool re = decode->Send(pkt);
+	if (!re)
+	{
+		vmux.unlock();
+		return true;//表示结束解码
+	}
+	AVFrame* frame = decode->Recv();
+	if (!frame)
+	{
+		vmux.unlock();
+		return false;
+	}
+	if (decode->pts >= seekpts)
+	{
+		if (call) call->Repaint(frame);
+		vmux.unlock();
+		return true;
+	}
+	XFreeFrame(&frame);
+	vmux.unlock();
+	return false;
+}
 
 bool XVideoThread::Open(AVCodecParameters* para, IVideoCall* call, int width, int height)
 {
@@ -34,6 +59,12 @@ void XVideoThread::run()
 	while (!isExit)
 	{
 		vmux.lock();
+		if (isPause)
+		{
+			vmux.unlock();
+			msleep(5);
+			continue;
+		}
 		//音视频同步
 		if (synpts > 0 && synpts < decode->pts)
 		{
@@ -71,4 +102,11 @@ XVideoThread::XVideoThread()
 
 XVideoThread::~XVideoThread()
 {
+}
+
+void XVideoThread::SetPause(bool isPause)
+{
+	vmux.lock();
+	this->isPause = isPause;
+	vmux.unlock();
 }

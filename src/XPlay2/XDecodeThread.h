@@ -29,6 +29,7 @@ public:
 protected:
 	std::list<AVPacket*> packets;
 	std::mutex mux;
+
 	XDecode* decode = nullptr;
 };
 

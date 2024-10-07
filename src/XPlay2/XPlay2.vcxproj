@@ -109,6 +109,7 @@
     <ClCompile Include="XDecodeThread.cpp" />
     <ClCompile Include="XDemuxThread.cpp" />
     <ClCompile Include="XResample.cpp" />
+    <ClCompile Include="XSlider.cpp" />
     <ClCompile Include="XVideoThread.cpp" />
     <ClCompile Include="XVideoWidget.cpp" />
     <QtRcc Include="XPlay2.qrc" />
@@ -133,6 +134,7 @@
     <ClInclude Include="XDemux.h" />
     <ClInclude Include="XDemuxThread.h" />
     <ClInclude Include="XResample.h" />
+    <QtMoc Include="XSlider.h" />
     <ClInclude Include="XVideoThread.h" />
     <QtMoc Include="XVideoWidget.h" />
   </ItemGroup>

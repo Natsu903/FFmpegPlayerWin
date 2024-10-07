@@ -21,6 +21,7 @@ XPlay2::~XPlay2()
 
 void XPlay2::timerEvent(QTimerEvent* e)
 {
+	if (isSliderPressed) return;
 	long long total = dt.totalMs;
 	if (total)
 	{
@@ -47,15 +48,44 @@ void XPlay2::mouseDoubleClickEvent(QMouseEvent* e)
 		this->showFullScreen();
 }
 
+void XPlay2::setPause(bool isPause)
+{
+	if (isPause)
+	{
+		ui.btnPause->setText("play");
+	}
+	else
+	{
+		ui.btnPause->setText("pause");
+	}
+}
+
+void XPlay2::PlayorPause()
+{
+	bool isPause = !dt.isPause;
+	setPause(isPause);
+	dt.SetPause(isPause);
+}
+
+void XPlay2::sliderPress()
+{
+	isSliderPressed = true;
+}
+
+void XPlay2::sliderRelease()
+{
+	isSliderPressed = false;
+	double pos = 0.0;
+	pos = (double)ui.playPos->value() / (double)ui.playPos->maximum();
+	dt.Seek(pos);
+}
+
 void XPlay2::OpenFile()
 {
     //选择文件
 	QString name = QFileDialog::getOpenFileName(this, QString::fromLocal8Bit("选择视频文件"));
 	if (name.isEmpty())return;
 	this->setWindowTitle(name);
-	if (!dt.Open(name.toLocal8Bit(), ui.video))
-	{
-		QMessageBox::information(nullptr, "error", "open file failed!");
-		return;
-	}
+	dt.Open(name.toLocal8Bit(), ui.video);
+	setPause(dt.isPause);
 }

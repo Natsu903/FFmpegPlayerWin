@@ -36,7 +36,7 @@
     <string>打开文件</string>
    </property>
   </widget>
-  <widget class="QSlider" name="playPos">
+  <widget class="XSlider" name="playPos">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -73,6 +73,11 @@
    <extends>QOpenGLWidget</extends>
    <header>XVideoWidget.h</header>
   </customwidget>
+  <customwidget>
+   <class>XSlider</class>
+   <extends>QSlider</extends>
+   <header>XSlider.h</header>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="XPlay2.qrc"/>
@@ -94,8 +99,59 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>btnPause</sender>
+   <signal>clicked()</signal>
+   <receiver>XPlay2Class</receiver>
+   <slot>PlayorPause()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>996</x>
+     <y>647</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>988</x>
+     <y>740</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>playPos</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>XPlay2Class</receiver>
+   <slot>sliderPress()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>200</x>
+     <y>688</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>198</x>
+     <y>737</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>playPos</sender>
+   <signal>sliderReleased()</signal>
+   <receiver>XPlay2Class</receiver>
+   <slot>sliderRelease()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>281</x>
+     <y>687</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>279</x>
+     <y>741</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>OpenFile()</slot>
+  <slot>PlayorPause()</slot>
+  <slot>sliderPress()</slot>
+  <slot>sliderRelease()</slot>
  </slots>
 </ui>

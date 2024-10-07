@@ -2,7 +2,12 @@
 #include "XDemux.h"
 #include "XVideoThread.h"
 #include "XAudioThread.h"
+#include "XDecode.h"
 #include <iostream>
+extern "C"
+{
+#include <libavformat/avformat.h>
+}
 
 bool XDemuxThread::Open(const char* url, IVideoCall* call)
 {
@@ -64,11 +69,58 @@ void XDemuxThread::Close()
 	mux.unlock();
 }
 
+void XDemuxThread::Clear()
+{
+	mux.lock();
+	if (demux) demux->Clear();
+	if (vt) vt->Clear();
+	if (at) at->Clear();
+	mux.unlock();
+}
+
+void XDemuxThread::Seek(double pos)
+{
+	//清理缓冲
+	Clear();
+
+	mux.lock();
+	bool status = this->isPause;
+	mux.unlock();
+
+	//暂停
+	SetPause(true);
+	mux.lock();
+	if (demux) demux->Seek(pos);
+	//实际要显示的pts
+	long long seekPts = pos * demux->totalMs;
+	while (!isExit)
+	{
+		AVPacket* pkt = demux->ReadVideo();
+		if (!pkt)break;
+		//如果解码到seekpts
+		if (vt->RepaintPts(pkt, seekPts))
+		{
+			this->pts = seekPts;
+			break;
+		}
+	}
+	mux.unlock();
+	//seek一开始如果不是暂停状态
+	if(!status)
+		SetPause(false);
+}
+
 void XDemuxThread::run()
 {
 	while (!isExit)
 	{
 		mux.lock();
+		if (isPause)
+		{
+			mux.unlock();
+			msleep(5);
+			continue;
+		}
 		if (!demux)
 		{
 			mux.unlock();
@@ -110,4 +162,13 @@ XDemuxThread::~XDemuxThread()
 {
 	isExit = true;
 	wait();
+}
+
+void XDemuxThread::SetPause(bool isPause)
+{
+	mux.lock();
+	this->isPause = isPause;
+	if (at) at->SetPause(isPause);
+	if (vt) vt->SetPause(isPause);
+	mux.unlock();
 }

@@ -144,6 +144,26 @@ AVPacket* XDemux::Read()
 	return pkt;
 }
 
+AVPacket* XDemux::ReadVideo()
+{
+	mux.lock();
+	if (!ic)
+	{
+		mux.unlock();
+		return nullptr;
+	}
+	mux.unlock();
+	AVPacket* pkt = nullptr;
+	for (int i = 0; i < 20; i++)
+	{
+		pkt = Read();
+		if(!pkt) break;
+		if (pkt->stream_index == videoStream) break;
+		av_packet_free(&pkt);
+	}
+	return pkt;
+}
+
 bool XDemux::IsAudio(AVPacket* pkt)
 {
 	if (!pkt)return false;
